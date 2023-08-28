@@ -29,9 +29,26 @@ def handle_hello():
 def handle_token():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
-    if email != "test" or password != "test":
+    
+    new_token = User.query.filter_by(email=email, password=password).first()
+    if new_token is None:
         return jsonify({"msg": " This email or password is incorrect"}), 401
 
     acess_token = create_access_token(identity=email)
     return jsonify(access_token=acess_token)
+
+# Crearte users
+@api.route('/create-user', methods=['POST'])
+def create_user():
     
+    user = User()
+    user.email = request.json.get("email", None)
+    user.password = request.json.get("password", None)
+    new_user = User.query.filter_by(email=user.email, password=user.password).first()
+    if new_user is None:
+        return jsonify({"msg": " This email or password is incorrect"}), 401
+    
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify(new_user.serialize())
