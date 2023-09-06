@@ -40,13 +40,19 @@ def handle_token():
 # Crearte users
 @api.route('/create-user', methods=['POST'])
 def create_user():
-    
-    user = User()
-    user.email = request.json.get("email", None)
-    user.password = request.json.get("password", None)
-    new_user = User.query.filter_by(email=user.email, password=user.password).first()
-    
+    user_email = request.json.get("email", None)
+    user_password = request.json.get("password", None)
+
+    # Check if a user with the same email already exists
+    existing_user = User.query.filter_by(email=user_email).first()
+
+    if existing_user is not None:
+        return jsonify({"msg": "This email is already in use"}), 400
+
+    # Create a new User object and set its attributes
+    new_user = User(email=user_email, password=user_password)
+
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify(new_user.serialize())
+    return jsonify({"msg": "User created successfully"}), 201
