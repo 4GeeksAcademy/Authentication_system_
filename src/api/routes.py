@@ -30,7 +30,9 @@ def handle_token():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
     
+   
     new_token = User.query.filter_by(email=email, password=password).first()
+    print(email, password, new_token)
     if new_token is None:
         return jsonify({"msg": " This email or password is incorrect"}), 401
 

@@ -3,6 +3,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 		store: {
 			token: null,
 			message: null,
+			user: [],
 			demo: [
 				{
 					title: "FIRST",
@@ -61,6 +62,39 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error("There has been an error login in")
 				}
 			},	
+			signup: async (email, password) => {
+				const opts = {
+				  method: 'POST',
+				  headers: {
+					"Content-Type": "application/json"
+				  },
+				  body: JSON.stringify({
+					"email": email,
+					"password": password
+				  })
+				};
+			  
+				try {
+				  const resp = await fetch('https://ubiquitous-space-rotary-phone-7jxpv6jj4j4hrvjw-3001.app.github.dev/api/create-user', opts);
+			  
+				  if (resp.status === 201) {
+					const data = await resp.json();
+					console.log("User created successfully", data);
+					// Store the authentication token or user ID in a more secure way
+					// Update the UI with the logged-in user
+					return true;
+				  } else if (resp.status === 400) {
+					const errorData = await resp.json();
+					alert(`Error: ${errorData.message}`);
+				  } else {
+					alert("An unexpected error occurred");
+				  }
+				} catch (error) {
+				  console.error("An error occurred while signing up", error);
+				  alert("An error occurred while signing up");
+				}
+				return false;
+			  },	
 			getMessage: async () => {
 				const store = getStore();
 				const opts = {
